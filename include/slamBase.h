@@ -98,3 +98,6 @@ public:
 public:
     map<string, string> data;
 };
+
+// 自定义全局static数值
+static int pointCloud_count = 0;

@@ -14,6 +14,8 @@ using namespace std;
 PointCloud::Ptr image2PointCloud( cv::Mat& rgb, cv::Mat& depth, CAMERA_INTRINSIC_PARAMETERS& camera )
 {
     PointCloud::Ptr cloud ( new PointCloud );
+    pointCloud_count++;
+    cout << "pointCloud count: " << pointCloud_count << endl;
 
     for (int m = 0; m < depth.rows; m++)
         for (int n=0; n < depth.cols; n++)
@@ -44,6 +46,12 @@ PointCloud::Ptr image2PointCloud( cv::Mat& rgb, cv::Mat& depth, CAMERA_INTRINSIC
     cloud->height = 1;
     cloud->width = cloud->points.size();
     cloud->is_dense = false;
+
+    if(pointCloud_count == 1){
+        pcl::io::savePCDFile( "./pointcloud1.pcd", *cloud );
+    }
+    if(pointCloud_count == 2)
+        pcl::io::savePCDFile( "./pointcloud2.pcd", *cloud );
 
     return cloud;
 }
