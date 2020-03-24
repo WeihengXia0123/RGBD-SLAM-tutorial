@@ -60,8 +60,9 @@ cv::Point3f point2dTo3d(cv::Point3f& point, CAMERA_INTRINSIC_PARAMETERS camera)
 void compute_KeyPoints_Desp(FRAME& frame)
 {
     // 构建SURF特征提取器
-    int minHessian=400;
-    cv::Ptr<cv::xfeatures2d::SIFT> _detector = cv::xfeatures2d::SIFT::create(minHessian);
+//    int minHessian=400;
+//    cv::Ptr<cv::xfeatures2d::SURF> _detector = cv::xfeatures2d::SURF::create(minHessian);
+    cv::Ptr<cv::ORB> _detector = cv::ORB::create();
 
     if(!_detector)
     {
@@ -69,23 +70,38 @@ void compute_KeyPoints_Desp(FRAME& frame)
     }
 
     // 提取关键点和计算描述子
-    vector< cv::KeyPoint > kp;
-    cv::Mat desp;
-    _detector->detectAndCompute(frame.rgb, cv::noArray(), kp, desp);
+    _detector->detectAndCompute(frame.rgb, cv::Mat(), frame.kp, frame.desp);
+
+    // 可视化， 显示关键点
+    cv::Mat imgShow;
+    cv::drawKeypoints( frame.rgb, frame.kp, imgShow, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+    cv::imshow( "keypoints", imgShow );
+    cv::waitKey(0); //暂停等待一个按键
 }
 
-RESULT_OF_PNP estimationMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARAMETERS& camera)
+RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARAMETERS& camera)
 {
     // 匹配描述子
     static ParameterReader paraRead;
     vector<cv::DMatch> matches;
     cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::BRUTEFORCE);
     matcher->match( frame1.desp, frame2.desp, matches );
+//    cv::FlannBasedMatcher matcher;
+//    vector< cv::DMatch > matches;
+//    matcher.match( frame1.desp, frame2.desp, matches );
     cout<<"Find total "<<matches.size()<<" matches."<<endl;
+
+    // 可视化：显示匹配的特征
+    cv::Mat imgMatches;
+    cv::drawMatches( frame1.rgb, frame1.kp, frame2.rgb, frame2.kp, matches, imgMatches );
+    cv::imshow( "matches", imgMatches );
+    cv::imwrite( "../data/matches.png", imgMatches );
+    cv::waitKey( 0 );
 
     // 筛选匹配，把距离太大的去掉
     vector<cv::DMatch> goodMatches;
     double minDis = 9999;
+    double good_match_threshold = atof(paraRead.getData("good_match_threshold").c_str());
     for ( size_t i=0; i<matches.size(); i++ )
     {
         if ( matches[i].distance < minDis )
@@ -95,11 +111,14 @@ RESULT_OF_PNP estimationMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PA
 
     for ( size_t i=0; i<matches.size(); i++ )
     {
-        if (matches[i].distance < 10*minDis)
+        if (matches[i].distance < good_match_threshold*minDis)
             goodMatches.push_back( matches[i] );
     }
     // 显示 good matches
     cout<<"good matches="<<goodMatches.size()<<endl;
+    cv::drawMatches( frame1.rgb, frame1.kp, frame2.rgb, frame2.kp, goodMatches, imgMatches );
+    cv::imshow( "good matches", imgMatches );
+    cv::waitKey(0);
 
     // 第一个帧的三维点
     vector<cv::Point3f> pts_obj;
@@ -133,7 +152,7 @@ RESULT_OF_PNP estimationMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PA
     cv::Mat cameraMatrix( 3, 3, CV_64F, camera_matrix_data );
     cv::Mat rvec, tvec, inliers;
     // 求解pnp
-    cv::solvePnPRansac( pts_obj, pts_img, cameraMatrix, cv::Mat(), rvec, tvec, false, 100, 1.0, 1.00 , inliers );
+    cv::solvePnPRansac( pts_obj, pts_img, cameraMatrix, cv::Mat(), rvec, tvec, false, 200, 1.0, 0.999 , inliers );
 
     RESULT_OF_PNP result_pnp;
     result_pnp.rvec = rvec;

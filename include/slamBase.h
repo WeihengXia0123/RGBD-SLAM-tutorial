@@ -50,13 +50,13 @@ cv::Point3f point2dTo3d(cv::Point3f& point, CAMERA_INTRINSIC_PARAMETERS camera);
 
 void compute_KeyPoints_Desp(FRAME& frame);
 
-RESULT_OF_PNP estimationMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARAMETERS& camera);
+RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARAMETERS& camera);
 
 // 参数读取类
 class ParameterReader
 {
 public:
-    ParameterReader( string filename="./parameters.txt" )
+    ParameterReader( string filename="../parameters.txt" )
     {
         ifstream fin( filename.c_str() );
         if (!fin)
