@@ -2,14 +2,17 @@
 using namespace std;
 
 #include "slamBase.h"
+
+// openCV库
 #include <opencv2/core/eigen.hpp>
-#include <opencv2/calib3d.hpp>
 
-#include <pcl/common/transforms.h>
-
+// eigen库
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
+// pcl库
+#include <pcl/common/transforms.h>
+#include <pcl/visualization/cloud_viewer.h>
 
 int main(int argc, char** argv)
 {
@@ -19,9 +22,9 @@ int main(int argc, char** argv)
 
     // 读取图像
     frame1.rgb = cv::imread("../data/rgb1.png");
-    frame1.depth = cv::imread("../data/depth1.png");
+    frame1.depth = cv::imread("../data/depth1.png", -1); //flag=-1时，8位深度，原通道
     frame2.rgb = cv::imread("../data/rgb2.png");
-    frame2.depth = cv::imread("../data/depth2.png");
+    frame2.depth = cv::imread("../data/depth2.png", -1); //flag=-1时，8位深度，原通道
 
     // 提取特征关键点和计算描述子
     cout << "extracting features" << endl;
@@ -70,10 +73,10 @@ int main(int argc, char** argv)
     pcl::io::savePCDFile("../data/result.pcd", *output);
     cout << "Final result saved." << endl;
 
-//    pcl::visualization::CloudViewer viewer("cloud viewer");
-//    viewer.showCloud(output);
-//    while (!viewer.wasStopped ())
-//    {}
+    pcl::visualization::CloudViewer viewer("cloud viewer");
+    viewer.showCloud(output);
+    while (!viewer.wasStopped ())
+    {}
 
     return 0;
 }

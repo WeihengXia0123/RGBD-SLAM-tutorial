@@ -7,17 +7,25 @@
  ************************************************************************/
 
 #include "slamBase.h"
-#include <opencv2/xfeatures2d.hpp>
-#include <opencv2/calib3d/calib3d.hpp>
+#include <opencv2/core/eigen.hpp>
+
+// PCL 库
+#include <pcl/common/transforms.h>
+#include <pcl/visualization/cloud_viewer.h>
+
+// Eigen 库
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
 using namespace std;
+
 
 PointCloud::Ptr image2PointCloud( cv::Mat& rgb, cv::Mat& depth, CAMERA_INTRINSIC_PARAMETERS& camera )
 {
     PointCloud::Ptr cloud ( new PointCloud );
-    pointCloud_count++;
-    cout << "pointCloud count: " << pointCloud_count << endl;
 
     for (int m = 0; m < depth.rows; m++)
+    {
         for (int n=0; n < depth.cols; n++)
         {
             // 获取深度图中(m,n)处的值
@@ -32,7 +40,7 @@ PointCloud::Ptr image2PointCloud( cv::Mat& rgb, cv::Mat& depth, CAMERA_INTRINSIC
             p.z = double(d) / camera.scale;
             p.x = (n - camera.cx) * p.z / camera.fx;
             p.y = (m - camera.cy) * p.z / camera.fy;
-            
+
             // 从rgb图像中获取它的颜色
             // rgb是三通道的BGR格式图，所以按下面的顺序获取颜色
             p.b = rgb.ptr<uchar>(m)[n*3];
@@ -42,11 +50,16 @@ PointCloud::Ptr image2PointCloud( cv::Mat& rgb, cv::Mat& depth, CAMERA_INTRINSIC
             // 把p加入到点云中
             cloud->points.push_back( p );
         }
+    }
+
     // 设置并保存点云
     cloud->height = 1;
     cloud->width = cloud->points.size();
     cloud->is_dense = false;
 
+    pointCloud_count++;
+    cout << "pointCloud count: " << pointCloud_count << endl;
+    cout<<"point cloud size = "<<cloud->points.size()<<endl;
     if(pointCloud_count == 1){
         pcl::io::savePCDFile( "./pointcloud1.pcd", *cloud );
     }
@@ -173,4 +186,65 @@ RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARA
 
     return result_pnp;
 
+}
+
+// cvMat2Eigen: 将cv的旋转矢量和位移矢量转换为变换矩阵,类型为Eigen:Isometry3d
+Eigen::Isometry3d cvMat2Eigen(cv::Mat& rvec, cv::Mat& tvec)
+{
+    cv::Mat R;
+    cv::Rodrigues(rvec, R); // cv::Rodrigues(src, dst)可以将旋转向量转换为旋转矩阵
+    Eigen::Matrix3d r;
+    cv::cv2eigen(R, r);  // cv::cv2eigen()转换为eigen类型
+
+    // 将rvec和tvec转为成变换矩阵
+    Eigen::Isometry3d  T = Eigen::Isometry3d::Identity();
+    Eigen::AngleAxisd angle(r);
+    // 下面这个Translation class不知道是起到什么作用
+    Eigen::Translation<double, 3> trans(tvec.at<double>(0,0), tvec.at<double>(0,1),
+            tvec.at<double>(0,2));
+    T = angle;
+    T(0,3) = tvec.at<double>(0,0);
+    T(1,3) = tvec.at<double>(0,1);
+    T(2,3) = tvec.at<double>(0,2);
+
+    return T;
+};
+
+// joinPointCloud
+// 输入：原始点云，新来的帧,以及它的位姿
+// 输出：将新来帧加到原始帧后的图像
+PointCloud::Ptr joinPointCloud(PointCloud::Ptr original, FRAME& newFrame, Eigen::Isometry3d T, CAMERA_INTRINSIC_PARAMETERS camera)
+{
+    PointCloud::Ptr newCloud = image2PointCloud(newFrame.rgb, newFrame.depth, camera);
+
+    //  合并点云
+    PointCloud::Ptr output(new PointCloud());
+    pcl::transformPointCloud(*original, *output, T.matrix());
+    *newCloud += *output;
+
+    //  Voxel grid滤波降采样
+    static pcl::VoxelGrid<PointT> voxel;
+    static ParameterReader pd;
+    double gridsize = atof(pd.getData("voxel_grid").c_str());
+    voxel.setLeafSize(gridsize, gridsize, gridsize);
+    voxel.setInputCloud(newCloud);
+    PointCloud::Ptr tmp(new PointCloud());
+    voxel.filter(*tmp);
+    return tmp;
+}
+
+// getDefaultCamera
+// 输出： Camera参数
+CAMERA_INTRINSIC_PARAMETERS getDefaultCamera()
+{
+    // 读取相机内参
+    ParameterReader paraReader;
+    CAMERA_INTRINSIC_PARAMETERS camera;
+    camera.fx = atof(paraReader.getData("camera.fx" ).c_str());
+    camera.fy = atof(paraReader.getData("camera.fy" ).c_str());
+    camera.cx = atof(paraReader.getData("camera.cx" ).c_str());
+    camera.cy = atof(paraReader.getData("camera.cy" ).c_str());
+    camera.scale = atof(paraReader.getData("camera.scale" ).c_str());
+
+    return camera;
 }

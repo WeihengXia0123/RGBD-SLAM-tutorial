@@ -2,7 +2,8 @@
 ADD_EXECUTABLE(main main.cpp)
 
 # 增加PCL库的依赖
-FIND_PACKAGE( PCL REQUIRED COMPONENTS common io )
+FIND_PACKAGE( PCL REQUIRED COMPONENTS common io visualization filters)
+list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4") # use this in Ubuntu 16.04
 
 # 增加opencv的依赖
 FIND_PACKAGE( OpenCV REQUIRED )
@@ -14,7 +15,7 @@ LINK_LIBRARIES( ${PCL_LIBRARY_DIRS} )
 
 
 
-# 添加可执行文件generatePointCloud.cpp
+# 添加可执行文件
 ADD_EXECUTABLE( generate_pointcloud generatePointCloud.cpp )
 TARGET_LINK_LIBRARIES( generate_pointcloud ${OpenCV_LIBS}
         ${PCL_LIBRARIES} )
@@ -34,12 +35,17 @@ TARGET_LINK_LIBRARIES(
 #        ${OpenCV_LIBS}
 #        ${PCL_LIBRARIES} )
 
-# 添加可执行文件joinPointCloud.cpp
+# 添加可执行文件
 ADD_EXECUTABLE( joinPointCloud joinPointCloud.cpp)
 TARGET_LINK_LIBRARIES(joinPointCloud
         slambase
         ${OpenCV_LIBS}
         ${PCL_LIBRARIES})
 
-
+# 添加可执行文件
+ADD_EXECUTABLE( visualOdometry visualOdometry.cpp)
+TARGET_LINK_LIBRARIES( visualOdometry
+        slambase
+        ${OpenCV_LIBS} 
+        ${PCL_LIBRARIES} )
 

@@ -12,10 +12,17 @@ using namespace std;
 // OpenCV 库
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/calib3d.hpp>
+#include <opencv2/xfeatures2d.hpp>
 
 // PCL 库
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
+#include <pcl/common/transforms.h>
+#include <pcl/visualization/cloud_viewer.h>
+#include <pcl/filters/voxel_grid.h>
+
+
 
 // 定义点云类型
 typedef pcl::PointXYZRGBA PointT;
@@ -52,10 +59,20 @@ void compute_KeyPoints_Desp(FRAME& frame);
 
 RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARAMETERS& camera);
 
+Eigen::Isometry3d cvMat2Eigen(cv::Mat& rvec, cv::Mat& tvec);
+
+PointCloud::Ptr joinPointCloud(PointCloud::Ptr original, FRAME& newFrame, Eigen::Isometry3d T, CAMERA_INTRINSIC_PARAMETERS camera);
+
+CAMERA_INTRINSIC_PARAMETERS getDefaultCamera();
+
 // 参数读取类
 class ParameterReader
 {
 public:
+    // Define data
+    map<string, string> data;
+
+    // Constructor
     ParameterReader( string filename="../parameters.txt" )
     {
         ifstream fin( filename.c_str() );
@@ -85,6 +102,8 @@ public:
                 break;
         }
     }
+
+    // Data getter
     string getData( string key )
     {
         map<string, string>::iterator iter = data.find(key);
@@ -95,8 +114,7 @@ public:
         }
         return iter->second;
     }
-public:
-    map<string, string> data;
+
 };
 
 // 自定义全局static数值
