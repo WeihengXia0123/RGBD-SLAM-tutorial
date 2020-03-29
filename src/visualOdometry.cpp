@@ -5,6 +5,16 @@ using namespace std;
 
 #include "slamBase.h"
 
+// openCV
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
+// PCL
+#include <pcl/visualization/cloud_viewer.h>
+#include <pcl/io/pcd_io.h>
+
+// Eigen
+
 
 // 给定index，读取一帧数据
 FRAME readFrame(int index, ParameterReader& pd);
