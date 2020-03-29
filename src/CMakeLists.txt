@@ -42,10 +42,10 @@ TARGET_LINK_LIBRARIES(joinPointCloud
         ${OpenCV_LIBS}
         ${PCL_LIBRARIES})
 
-# 添加可执行文件
-ADD_EXECUTABLE( visualOdometry visualOdometry.cpp)
-TARGET_LINK_LIBRARIES( visualOdometry
-        slambase
-        ${OpenCV_LIBS} 
-        ${PCL_LIBRARIES} )
+# # 添加可执行文件
+# ADD_EXECUTABLE( visualOdometry visualOdometry.cpp)
+# TARGET_LINK_LIBRARIES( visualOdometry
+#         slambase
+#         ${OpenCV_LIBS} 
+#         ${PCL_LIBRARIES} )
 

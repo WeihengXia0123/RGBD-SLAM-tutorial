@@ -5,12 +5,15 @@ using namespace std;
 
 // openCV库
 #include <opencv2/core/eigen.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/opencv.hpp>
 
 // eigen库
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
 // pcl库
+#include <pcl/io/pcd_io.h>
 #include <pcl/common/transforms.h>
 #include <pcl/visualization/cloud_viewer.h>
 

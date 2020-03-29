@@ -7,11 +7,19 @@
  ************************************************************************/
 
 #include "slamBase.h"
+
+// OpenCV 库
 #include <opencv2/core/eigen.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/calib3d/calib3d.hpp>
 
 // PCL 库
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
 #include <pcl/common/transforms.h>
 #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/filters/voxel_grid.h>
 
 // Eigen 库
 #include <Eigen/Core>

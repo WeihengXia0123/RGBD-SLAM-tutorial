@@ -1,28 +1,19 @@
-/*********************
- * note: to declare all basic functions in RBGD-SLAM tutorial
- *********************/
-
 # pragma once
 
 // C++ 标准库
 #include <iostream>
 #include <string>
+#include <map>
+#include <fstream>
 using namespace std;
 
-// OpenCV 库
+// openCV库
 #include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/calib3d.hpp>
-#include <opencv2/xfeatures2d.hpp>
 
 // PCL 库
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-#include <pcl/common/transforms.h>
-#include <pcl/visualization/cloud_viewer.h>
-#include <pcl/filters/voxel_grid.h>
-
-
+#include <pcl/point_cloud.h>
+//#include <pcl/io/pcd_io.h>
 
 // 定义点云类型
 typedef pcl::PointXYZRGBA PointT;
