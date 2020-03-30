@@ -2,7 +2,6 @@
 using namespace std;
 
 #include "slamBase.h"
-
 // openCV库
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/core/core.hpp>
@@ -15,7 +14,7 @@ using namespace std;
 // pcl库
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/transforms.h>
-#include <pcl/visualization/cloud_viewer.h>
+// #include <pcl/visualization/cloud_viewer.h>
 
 int main(int argc, char** argv)
 {
@@ -76,10 +75,10 @@ int main(int argc, char** argv)
     pcl::io::savePCDFile("../data/result.pcd", *output);
     cout << "Final result saved." << endl;
 
-    pcl::visualization::CloudViewer viewer("cloud viewer");
-    viewer.showCloud(output);
-    while (!viewer.wasStopped ())
-    {}
+    // pcl::visualization::CloudViewer viewer("cloud viewer");
+    // viewer.showCloud(output);
+    // while (!viewer.wasStopped ())
+    // {}
 
     return 0;
 }

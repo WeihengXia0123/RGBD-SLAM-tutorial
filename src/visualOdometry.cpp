@@ -13,8 +13,6 @@ using namespace std;
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/pcd_io.h>
 
-// Eigen
-
 
 // 给定index，读取一帧数据
 FRAME readFrame(int index, ParameterReader& pd);
@@ -38,12 +36,11 @@ int main(int argc, char** argv)
     // 我们总是在比较currFrame和lastFrame
     // 这个getDefaultCamera()在哪里定义的哦？ 在slamBase.h
     CAMERA_INTRINSIC_PARAMETERS camera = getDefaultCamera();
-
     compute_KeyPoints_Desp(lastFrame);
     PointCloud::Ptr cloud = image2PointCloud(lastFrame.rgb, lastFrame.depth, camera);
 
+    // 是否显示点云
     pcl::visualization::CloudViewer viewer("cloud viewer");
-    //是否显示点云
     bool visualize = pd.getData("visualize_pointcloud") == string("yes");
 
     int min_inliers = atoi(pd.getData("min_inliers").c_str());
@@ -51,6 +48,7 @@ int main(int argc, char** argv)
 
     for(currIndex = startIndex+1; currIndex<endIndex; currIndex++)
     {
+        cout << endl;
         cout << "Reading files " << currIndex << endl;
         FRAME currFrame = readFrame(currIndex, pd); //读取currFrame
         compute_KeyPoints_Desp(currFrame);
@@ -59,15 +57,20 @@ int main(int argc, char** argv)
         if(result.inliers < min_inliers)
         {
             // 如果inliers不够，放弃该帧
+            cout << "inliers not enough, abandoning this frame" << endl;
             continue;
         }
         // 计算运动范围是否太大
         double norm = normofTransform(result.rvec, result.tvec);
         cout << "norm = " << norm << endl;
         if(norm >= max_norm)
+        {
+            cout << "normal out of range" << endl;
             continue;
+        }
+            
         Eigen::Isometry3d T = cvMat2Eigen(result.rvec, result.tvec);
-        cout << "T = " << T.matrix() << endl;
+        // cout << "T = " << T.matrix() << endl;
 
         cloud = joinPointCloud(cloud,currFrame, T,camera);
 

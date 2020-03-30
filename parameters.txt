@@ -19,7 +19,7 @@ camera.scale=1000.0;
 
 # 起始与终止索引
 start_index=1
-end_index=700
+end_index=500
 
 # 数据所在目录
 rgb_dir=../data/rgb_png/
@@ -28,7 +28,7 @@ depth_dir=../data/depth_png/
 depth_extension=.png
 
 # 点云分辨率
-voxel_grid=0.02
+voxel_grid=0.01
 
 # 是否实时可视化
 visualize_pointcloud=yes

@@ -29,8 +29,8 @@ TARGET_LINK_LIBRARIES(
 )
 
 # 添加可执行文件detectFeatures.cpp
-#ADD_EXECUTABLE( detectFeatures detectFeatures.cpp joinPointCloud.cpp)
-#TARGET_LINK_LIBRARIES( detectFeatures
+# ADD_EXECUTABLE( detectFeatures detectFeatures.cpp joinPointCloud.cpp)
+# TARGET_LINK_LIBRARIES( detectFeatures
 #        slambase
 #        ${OpenCV_LIBS}
 #        ${PCL_LIBRARIES} )

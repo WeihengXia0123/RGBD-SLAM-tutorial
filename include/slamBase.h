@@ -54,8 +54,6 @@ Eigen::Isometry3d cvMat2Eigen(cv::Mat& rvec, cv::Mat& tvec);
 
 PointCloud::Ptr joinPointCloud(PointCloud::Ptr original, FRAME& newFrame, Eigen::Isometry3d T, CAMERA_INTRINSIC_PARAMETERS camera);
 
-CAMERA_INTRINSIC_PARAMETERS getDefaultCamera();
-
 // 参数读取类
 class ParameterReader
 {
@@ -110,3 +108,17 @@ public:
 
 // 自定义全局static数值
 static int pointCloud_count = 0;
+
+// getDefaultCamera
+// 输出： Camera参数
+static CAMERA_INTRINSIC_PARAMETERS getDefaultCamera()
+{
+    ParameterReader pd;
+    CAMERA_INTRINSIC_PARAMETERS camera;
+    camera.fx = atof( pd.getData( "camera.fx" ).c_str());
+    camera.fy = atof( pd.getData( "camera.fy" ).c_str());
+    camera.cx = atof( pd.getData( "camera.cx" ).c_str());
+    camera.cy = atof( pd.getData( "camera.cy" ).c_str());
+    camera.scale = atof( pd.getData( "camera.scale" ).c_str() );
+    return camera;
+}

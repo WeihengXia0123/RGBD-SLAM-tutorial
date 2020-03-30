@@ -13,12 +13,13 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
+#include <opencv2/features2d.hpp>
 
 // PCL 库
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/common/transforms.h>
-#include <pcl/visualization/cloud_viewer.h>
+// #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/filters/voxel_grid.h>
 
 // Eigen 库
@@ -60,19 +61,22 @@ PointCloud::Ptr image2PointCloud( cv::Mat& rgb, cv::Mat& depth, CAMERA_INTRINSIC
         }
     }
 
-    // 设置并保存点云
+    // 设置并返回点云
     cloud->height = 1;
     cloud->width = cloud->points.size();
     cloud->is_dense = false;
 
     pointCloud_count++;
-    cout << "pointCloud count: " << pointCloud_count << endl;
-    cout<<"point cloud size = "<<cloud->points.size()<<endl;
-    if(pointCloud_count == 1){
-        pcl::io::savePCDFile( "./pointcloud1.pcd", *cloud );
-    }
-    if(pointCloud_count == 2)
-        pcl::io::savePCDFile( "./pointcloud2.pcd", *cloud );
+    // cout << "pointCloud count: " << pointCloud_count << endl;
+    // cout<<"point cloud size = "<<cloud->points.size()<<endl;
+
+    //保存每一个点云
+    // stringstream s_stream;
+    // string folder_path = "../data/clouds/";
+    // s_stream << folder_path << pointCloud_count << ".pcd";
+    // string cloud_FileName;
+    // s_stream >> cloud_FileName;
+    // pcl::io::savePCDFile(cloud_FileName, *cloud);
 
     return cloud;
 }
@@ -102,32 +106,34 @@ void compute_KeyPoints_Desp(FRAME& frame)
     _detector->detectAndCompute(frame.rgb, cv::Mat(), frame.kp, frame.desp);
 
     // 可视化， 显示关键点
-    cv::Mat imgShow;
-    cv::drawKeypoints( frame.rgb, frame.kp, imgShow, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
-    cv::imshow( "keypoints", imgShow );
-    cv::waitKey(0); //暂停等待一个按键
+    // cv::Mat imgShow;
+    // cv::drawKeypoints( frame.rgb, frame.kp, imgShow, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+    // cv::imshow( "keypoints", imgShow );
+    // cv::waitKey(0); //暂停等待一个按键
 }
 
 RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARAMETERS& camera)
 {
-    // 匹配描述子
     static ParameterReader paraRead;
+ 
+    // 匹配描述子
+    cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::BRUTEFORCE_HAMMING);
     vector<cv::DMatch> matches;
-    cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::BRUTEFORCE);
     matcher->match( frame1.desp, frame2.desp, matches );
-//    cv::FlannBasedMatcher matcher;
-//    vector< cv::DMatch > matches;
-//    matcher.match( frame1.desp, frame2.desp, matches );
+    // cv::FlannBasedMatcher matcher;
+    // vector< cv::DMatch > matches;
+    // matcher.match( frame1.desp, frame2.desp, matches );
     cout<<"Find total "<<matches.size()<<" matches."<<endl;
 
     // 可视化：显示匹配的特征
-    cv::Mat imgMatches;
-    cv::drawMatches( frame1.rgb, frame1.kp, frame2.rgb, frame2.kp, matches, imgMatches );
-    cv::imshow( "matches", imgMatches );
-    cv::imwrite( "../data/matches.png", imgMatches );
-    cv::waitKey( 0 );
+    // cv::Mat imgMatches;
+    // cv::drawMatches( frame1.rgb, frame1.kp, frame2.rgb, frame2.kp, matches, imgMatches );
+    // cv::imshow( "matches", imgMatches );
+    // cv::imwrite( "../data/matches.png", imgMatches );
+    // cv::waitKey( 0 );
 
     // 筛选匹配，把距离太大的去掉
+    RESULT_OF_PNP result_pnp;   //pnp计算结果： rvec, tvec, inlier
     vector<cv::DMatch> goodMatches;
     double minDis = 9999;
     double good_match_threshold = atof(paraRead.getData("good_match_threshold").c_str());
@@ -144,10 +150,17 @@ RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARA
             goodMatches.push_back( matches[i] );
     }
     // 显示 good matches
-    cout<<"good matches="<<goodMatches.size()<<endl;
-    cv::drawMatches( frame1.rgb, frame1.kp, frame2.rgb, frame2.kp, goodMatches, imgMatches );
-    cv::imshow( "good matches", imgMatches );
-    cv::waitKey(0);
+    cout << "good matches=" << goodMatches.size() << endl;
+    // cv::drawMatches( frame1.rgb, frame1.kp, frame2.rgb, frame2.kp, goodMatches, imgMatches );
+    // cv::imshow( "good matches", imgMatches );
+    // cv::imwrite( "../data/good_matches.png", imgMatches );
+    // cv::waitKey(0);
+
+    if (goodMatches.size() <= 10) 
+    {
+        result_pnp.inliers = -1;
+        return result_pnp;
+    }
 
     // 第一个帧的三维点
     vector<cv::Point3f> pts_obj;
@@ -180,17 +193,18 @@ RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARA
     // 构建相机矩阵
     cv::Mat cameraMatrix( 3, 3, CV_64F, camera_matrix_data );
     cv::Mat rvec, tvec, inliers;
-    // 求解pnp
-    cv::solvePnPRansac( pts_obj, pts_img, cameraMatrix, cv::Mat(), rvec, tvec, false, 200, 1.0, 0.999 , inliers );
 
-    RESULT_OF_PNP result_pnp;
+    // 求解pnp
+    cv::solvePnPRansac( pts_obj, pts_img, cameraMatrix, cv::Mat(), rvec, tvec, false, 100, 1.0, 0.95 , inliers );
+
+
     result_pnp.rvec = rvec;
     result_pnp.tvec = tvec;
     result_pnp.inliers = inliers.rows;
 
     cout<<"inliers: "<<inliers.rows<<endl;
-    cout<<"R="<<rvec<<endl;
-    cout<<"t="<<tvec<<endl;
+    // cout<<"R="<<rvec<<endl;
+    // cout<<"t="<<tvec<<endl;
 
     return result_pnp;
 
@@ -241,18 +255,3 @@ PointCloud::Ptr joinPointCloud(PointCloud::Ptr original, FRAME& newFrame, Eigen:
     return tmp;
 }
 
-// getDefaultCamera
-// 输出： Camera参数
-CAMERA_INTRINSIC_PARAMETERS getDefaultCamera()
-{
-    // 读取相机内参
-    ParameterReader paraReader;
-    CAMERA_INTRINSIC_PARAMETERS camera;
-    camera.fx = atof(paraReader.getData("camera.fx" ).c_str());
-    camera.fy = atof(paraReader.getData("camera.fy" ).c_str());
-    camera.cx = atof(paraReader.getData("camera.cx" ).c_str());
-    camera.cy = atof(paraReader.getData("camera.cy" ).c_str());
-    camera.scale = atof(paraReader.getData("camera.scale" ).c_str());
-
-    return camera;
-}
