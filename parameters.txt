@@ -19,7 +19,7 @@ camera.scale=1000.0;
 
 # 起始与终止索引
 start_index=1
-end_index=500
+end_index=750
 
 # 数据所在目录
 rgb_dir=../data/rgb_png/
@@ -41,3 +41,14 @@ min_inliers=5
 
 # 最大运动误差
 max_norm=0.3
+
+#part 7
+
+
+keyframe_threshold=0.10
+max_norm_lp=5.0
+
+# Loop closure
+check_loop_closure=yes
+nearby_loops=5
+random_loops=5

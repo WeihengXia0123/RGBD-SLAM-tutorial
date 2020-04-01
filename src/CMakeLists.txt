@@ -1,5 +1,4 @@
-# 增加可执行的二进制文件
-ADD_EXECUTABLE(main main.cpp)
+
 
 # 增加PCL库的依赖
 FIND_PACKAGE( PCL REQUIRED COMPONENTS common io visualization filters)
@@ -64,4 +63,23 @@ TARGET_LINK_LIBRARIES( slamEnd
     slambase
     ${OpenCV_LIBS}
     ${PCL_LIBRARIES}
-    g2o_core g2o_types_slam3d g2o_solver_csparse g2o_stuff g2o_csparse_extension ${CSPARSE_LIBRARY})
+    g2o_core g2o_types_slam3d 
+    g2o_solver_csparse g2o_stuff 
+    g2o_csparse_extension ${CSPARSE_LIBRARY})
+
+# 添加可执行文件 
+ADD_EXECUTABLE( slam slam.cpp )
+TARGET_LINK_LIBRARIES( slam
+    slambase
+    ${OpenCV_LIBS}
+    ${PCL_LIBRARIES}
+    g2o_core g2o_types_slam3d 
+    g2o_solver_csparse g2o_stuff 
+    g2o_csparse_extension ${CSPARSE_LIBRARY})
+
+    # 增加可执行的二进制文件
+ADD_EXECUTABLE(main main.cpp)
+TARGET_LINK_LIBRARIES( main
+        slambase
+        ${OpenCV_LIBS} 
+        ${PCL_LIBRARIES} )

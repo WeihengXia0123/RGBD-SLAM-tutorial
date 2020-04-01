@@ -117,7 +117,7 @@ RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARA
     static ParameterReader paraRead;
  
     // 匹配描述子
-    cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::BRUTEFORCE_HAMMING);
+    cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::BRUTEFORCE);
     vector<cv::DMatch> matches;
     matcher->match( frame1.desp, frame2.desp, matches );
     // cv::FlannBasedMatcher matcher;
@@ -161,6 +161,12 @@ RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARA
         result_pnp.inliers = -1;
         return result_pnp;
     }
+    // // 下面这个else if是夏自己添加的
+    // else if(goodMatches.size() == 500)
+    // {
+    //     result_pnp.inliers = -1;
+    //     return result_pnp;
+    // }
 
     // 第一个帧的三维点
     vector<cv::Point3f> pts_obj;
@@ -254,4 +260,3 @@ PointCloud::Ptr joinPointCloud(PointCloud::Ptr original, FRAME& newFrame, Eigen:
     voxel.filter(*tmp);
     return tmp;
 }
-

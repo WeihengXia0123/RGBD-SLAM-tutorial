@@ -51,8 +51,8 @@ int main(int argc, char** argv)
     PointCloud::Ptr cloud = image2PointCloud(lastFrame.rgb, lastFrame.depth, camera);
 
     // 是否显示点云
-    pcl::visualization::CloudViewer viewer("cloud viewer");
-    bool visualize = pd.getData("visualize_pointcloud") == string("yes");
+    // pcl::visualization::CloudViewer viewer("cloud viewer");
+    // bool visualize = pd.getData("visualize_pointcloud") == string("yes");
 
     int min_inliers = atoi(pd.getData("min_inliers").c_str());
     double max_norm = atof(pd.getData("max_norm").c_str());
