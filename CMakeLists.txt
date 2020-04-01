@@ -1,5 +1,6 @@
 CMAKE_MINIMUM_REQUIRED( VERSION 2.8 ) #设定版本
 PROJECT( slam ) #设定工程名
+SET( CMAKE_BUILD_TYPE Release) 
 SET( CMAKE_CXX_COMPILER "g++") #设定编译器
 	
 #设定可执行二进制文件的目录
