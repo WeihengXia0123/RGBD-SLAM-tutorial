@@ -177,6 +177,7 @@ RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARA
     for (size_t i=0; i<goodMatches.size(); i++)
     {
         // query 是第一个, train 是第二个
+        // TODO: DEBUG
         cv::Point2f p = frame1.kp[goodMatches[i].queryIdx].pt;
         // 获取d是要小心！x是向右的，y是向下的，所以y才是行，x是列！
         ushort d = frame1.depth.ptr<ushort>( int(p.y) )[ int(p.x) ];
