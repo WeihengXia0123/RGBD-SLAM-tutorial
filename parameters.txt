@@ -5,14 +5,14 @@
 
 detector=ORB
 descriptor=ORB
-good_match_threshold=10
+good_match_threshold=15
 
 # camera
-camera.cx=325.5;
-camera.cy=253.5;
-camera.fx=518.0;
-camera.fy=519.0;
-camera.scale=1000.0;
+camera.cx=319.5;
+camera.cy=239.5;
+camera.fx=525.0;
+camera.fy=525.0;
+camera.scale=5000.0;
 
 
 # part 5  数据相关
@@ -52,3 +52,6 @@ max_norm_lp=5.0
 check_loop_closure=yes
 nearby_loops=5
 random_loops=5
+
+# confidence
+confidence=0.98

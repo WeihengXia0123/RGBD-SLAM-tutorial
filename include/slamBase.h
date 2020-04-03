@@ -61,7 +61,6 @@ class ParameterReader
 public:
     // Define data
     map<string, string> data;
-    // vector<string> img_number;
 
     // Constructor
     ParameterReader( string filename="../parameters.txt" )
@@ -90,16 +89,6 @@ public:
                 string value = str.substr( pos+1, str.length() );
                 data[key] = value;
             }
-
-
-            // //读取rgb和depth的图片排序
-            // int pos_space = str.find(" ");
-            // if(pos_space!=-1)
-            // {
-            //     cout << "读到一个空格" << endl;
-            //     string img = str.substr(0,pos_space);
-            //     img_number.push_back(img);
-            // }
             
             //没打开file或者读完了，直接停止While
             if ( !fin.good() )
@@ -121,6 +110,107 @@ public:
 
 
 };
+
+// 参数读取类
+class ImgReader
+{
+public:
+    // Define data
+    vector<string> img;
+
+    // Constructor
+    ImgReader( string fileName="../data/rgb.txt")
+    {
+        ifstream fin( fileName.c_str() );
+        if (!fin)
+        {
+            cerr<<"img file does not exist."<<endl;
+            return;
+        }
+        while(!fin.eof())
+        {
+            string str;
+            getline( fin, str );
+            if (str[0] == '#')
+            {
+                // 以‘＃’开头的是注释
+                continue;
+            }
+
+            //读取rgb和depth的图片排序
+            int pos_space = str.find(" ");
+            if(pos_space!=-1)
+            {
+                string img_name = str.substr(0,pos_space);
+                img.push_back(img_name);
+            }
+            
+            //没打开file或者读完了，直接停止While
+            if ( !fin.good() )
+                break;
+        }
+    }
+
+
+    // Img getter
+    string getImg(int index)
+    {
+        vector<string>::iterator iter = img.begin()+index;
+        return *iter;
+    }
+
+};
+
+// 参数读取类
+class DepthReader
+{
+public:
+    // Define data
+    vector<string> depth;
+
+    // Constructor
+    DepthReader(string fileNAME="../data/depth.txt")
+    {
+        ifstream fin( fileNAME.c_str() );
+        if (!fin)
+        {
+            cerr<<"img file does not exist."<<endl;
+            return;
+        }
+        while(!fin.eof())
+        {
+            string str;
+            getline( fin, str );
+            if (str[0] == '#')
+            {
+                // 以‘＃’开头的是注释
+                continue;
+            }
+
+            //读取rgb和depth的图片排序
+            int pos_space = str.find(" ");
+            if(pos_space!=-1)
+            {
+                string depth_name = str.substr(0,pos_space);
+                depth.push_back(depth_name);
+            }
+            
+            //没打开file或者读完了，直接停止While
+            if ( !fin.good() )
+                break;
+        }
+    }
+
+
+    // depth getter
+    string getDepth(int index)
+    {
+        vector<string>::iterator iter = depth.begin()+index;
+        return *iter;
+    }
+
+};
+
 
 // 自定义全局static数值
 static int pointCloud_count = 0;

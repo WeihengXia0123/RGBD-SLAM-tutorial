@@ -156,7 +156,7 @@ RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARA
     // cv::imwrite( "../data/good_matches.png", imgMatches );
     // cv::waitKey(0);
 
-    if (goodMatches.size() <= 10) 
+    if (goodMatches.size() <= 7) 
     {
         result_pnp.inliers = -1;
         return result_pnp;
@@ -173,6 +173,7 @@ RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARA
     // 第二个帧的图像点
     vector< cv::Point2f > pts_img;
 
+    cout << "pushing good matches " << endl;
     for (size_t i=0; i<goodMatches.size(); i++)
     {
         // query 是第一个, train 是第二个
@@ -188,6 +189,7 @@ RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARA
         cv::Point3f pd = point2dTo3d( pt, camera );
         pts_obj.push_back( pd );
     }
+    cout << "finishing push of good matches " << endl;
 
     double camera_matrix_data[3][3] = {
             {camera.fx, 0, camera.cx},
@@ -201,7 +203,9 @@ RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARA
     cv::Mat rvec, tvec, inliers;
 
     // 求解pnp
-    cv::solvePnPRansac( pts_obj, pts_img, cameraMatrix, cv::Mat(), rvec, tvec, false, 100, 1.0, 0.95 , inliers );
+    ParameterReader paraRd;
+    double confidence = stod(paraRd.getData("confidence"));
+    cv::solvePnPRansac( pts_obj, pts_img, cameraMatrix, cv::Mat(), rvec, tvec, false, 100, 0.9, confidence, inliers );
 
 
     result_pnp.rvec = rvec;
