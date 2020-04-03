@@ -16,12 +16,15 @@ using namespace std;
 
 // 给定index，读取一帧数据
 FRAME readFrame(int index, ParameterReader& pd);
+FRAME readFrameDepthImg(int index, ParameterReader& pd, ImgReader& imgRd, DepthReader& depthRd);
 // 度量运动的大小
 double normofTransform(cv::Mat rvec, cv::Mat tvec);
 
 int main(int argc, char** argv)
 {
     ParameterReader pd;
+    ImgReader imgRd;
+    DepthReader depthRd;
     // c_str()函数返回一个指向正规C字符串的指针常量，内容与本string串相同。
     // 这是为了与C语言兼容，在C语言中没有string类型
     // 故必须通过string类对象的成员函数c_str()把string对象转换成C中的字符串样式。
@@ -32,7 +35,8 @@ int main(int argc, char** argv)
     //initialize
     cout << "Initializing ..." << endl;
     int currIndex = startIndex; // 当前索引为currIndex
-    FRAME lastFrame = readFrame(currIndex, pd); //上一帧数据
+    //FRAME lastFrame = readFrame(currIndex, pd); //上一帧数据
+    FRAME lastFrame = readFrameDepthImg(currIndex, pd, imgRd, depthRd); //上一帧数据
     // 我们总是在比较currFrame和lastFrame
     // 这个getDefaultCamera()在哪里定义的哦？ 在slamBase.h
     CAMERA_INTRINSIC_PARAMETERS camera = getDefaultCamera();
@@ -50,7 +54,7 @@ int main(int argc, char** argv)
     {
         cout << endl;
         cout << "Reading files " << currIndex << endl;
-        FRAME currFrame = readFrame(currIndex, pd); //读取currFrame
+        FRAME currFrame = readFrameDepthImg(currIndex, pd, imgRd, depthRd); //读取currFrame
         compute_KeyPoints_Desp(currFrame);
         // 比较 [currFrame] and [lastFrame]
         RESULT_OF_PNP result = estimateMotion(lastFrame, currFrame,camera);
@@ -90,6 +94,7 @@ int main(int argc, char** argv)
 FRAME readFrame(int index, ParameterReader& pd)
 {
     FRAME f;
+
     string rgbDir = pd.getData("rgb_dir");
     string depthDir = pd.getData("depth_dir");
 
@@ -106,8 +111,37 @@ FRAME readFrame(int index, ParameterReader& pd)
     filename.clear();
     ss << depthDir << index << depthExt;
     ss >> filename;
-
     f.depth = cv::imread(filename, -1);
+
+    return f;
+}
+
+FRAME readFrameDepthImg(int index, ParameterReader& pd, ImgReader& imgRd, DepthReader& depthRd)
+{
+    FRAME f;
+
+    string rgbDir = pd.getData("rgb_dir");
+    string depthDir = pd.getData("depth_dir");
+
+    string rgbExt = pd.getData("rgb_extension");
+    string depthExt = pd.getData("depth_extension");
+
+    stringstream ss;
+    string filename;
+
+    cout << "img_index: " << imgRd.getImg(index) << endl;
+    ss << rgbDir << imgRd.getImg(index) << rgbExt;
+    ss >> filename;
+    f.rgb = cv::imread(filename);
+
+    ss.clear();
+    filename.clear();
+
+    cout << "depth_index: " << depthRd.getDepth(index) << endl;
+    ss << depthDir << depthRd.getDepth(index) << depthExt;
+    ss >> filename;
+    f.depth = cv::imread(filename, -1);
+
     return f;
 }
 
