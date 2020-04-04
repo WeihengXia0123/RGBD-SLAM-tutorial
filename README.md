@@ -1,8 +1,8 @@
 # RGBD-SLAM-tutorial
 
 ## Reference： 
-- Tutorial Blog [一起来做RGBD-SLAM系列]https://www.cnblogs.com/gaoxiang12/p/4652478.html
-- TUM dataset [dataset]https://vision.in.tum.de/data/datasets/rgbd-dataset
+- Tutorial Blog [一起来做RGBD-SLAM系列](https://www.cnblogs.com/gaoxiang12/p/4652478.html)
+- TUM dataset [dataset](https://vision.in.tum.de/data/datasets/rgbd-dataset)
 
 ## How to run the code:
 - Preparation: download openCV 3.4+ and PCL, Eigen3, and other necessary libraries (I might forget some, but can be found in the includes).
