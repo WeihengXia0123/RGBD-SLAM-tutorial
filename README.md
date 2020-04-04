@@ -19,7 +19,9 @@ make
 
 ## Example of results
 
-<img src="https://github.com/WeihengXia0123/RGBD-SLAM-tutorial/blob/master/example/1.png" width="400" height="400"/>
+<div align=center><img src="https://github.com/WeihengXia0123/RGBD-SLAM-tutorial/blob/master/example/3.png" width="600" height="600"/>
+  
+<div align=center><img src="https://github.com/WeihengXia0123/RGBD-SLAM-tutorial/blob/master/example/1.png" width="600" height="600"/>
+  
+<div align=center><img src="https://github.com/WeihengXia0123/RGBD-SLAM-tutorial/blob/master/example/2.png" width="600" height="600"/>
 
-![image](https://github.com/WeihengXia0123/RGBD-SLAM-tutorial/blob/master/example/1.png)
-![image](https://github.com/WeihengXia0123/RGBD-SLAM-tutorial/blob/master/example/2.png)
