@@ -1,11 +1,3 @@
-/*************************************************************************
-    > File Name: src/slamBase.cpp
-    > Author: xiang gao
-    > Mail: gaoxiang12@mails.tsinghua.edu.cn
-    > Implementation of slamBase.h
-    > Created Time: 2015年07月18日 星期六 15时31分49秒
- ************************************************************************/
-
 #include "slamBase.h"
 
 // OpenCV 库

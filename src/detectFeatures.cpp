@@ -1,11 +1,3 @@
-/*************************************************************************
-	> File Name: detectFeatures.cpp
-	> Author: xiang gao
-	> Mail: gaoxiang12@mails.tsinghua.edu.cn
-    > 特征提取与匹配
-	> Created Time: 2015年07月18日 星期六 16时00分21秒
- ************************************************************************/
-
 #include<iostream>
 #include "slamBase.h"
 using namespace std;

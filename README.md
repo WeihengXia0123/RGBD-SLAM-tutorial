@@ -19,7 +19,24 @@ make
 
 ## Code structure
 `/src` has the main source files.
-- `slamBase.cpp` has most self-defined functions to compute 
+- `slamBase.cpp` has most self-defined functions to compute keyPoints and Descriptors, estimate Motion, join point clouds and so on.
+- `visualOdometry.cpp` implemented the VO.
+- `slamEnd.cpp` integrated the G2O library for optimization.
+- `slam.cpp` improved based on `slamEnd` and `vo`, by adding keyFrames extraction and check_loop_closure. It is the complete version based on the above steps, yet still has some bugs.
+
+## Bugs for future improvement
+- core dump at some frames
+- some wierd DTL algorithm bugs: 
+```bash
+DLT algorithm needs at least 6 points for pose estimation from 3D-2D point correspondences. (expected: 'count >= 6'), where'count' is 5
+```
+- too many consecutive `not enough inliers`, maybe the distance between the frames are too far.
+```bash
+solving PnP
+inliers: 0
+inliers not enough, abandoning this frame
+```
+
 
 ## Example of results
 
