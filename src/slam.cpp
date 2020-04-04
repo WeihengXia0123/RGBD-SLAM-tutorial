@@ -29,7 +29,8 @@ using namespace std;
 #include <g2o/core/optimization_algorithm_levenberg.h>
 
 // 给定index，读取一帧数据
-FRAME readFrame(int index, ParameterReader& pd);
+// FRAME readFrame(int index, ParameterReader& pd);
+FRAME readFrameDepthImg(int index, ParameterReader& pd, ImgReader& imgRd, DepthReader& depthRd);
 // 度量运动的大小
 double normofTransform(cv::Mat rvec, cv::Mat tvec);
 
@@ -37,10 +38,6 @@ double normofTransform(cv::Mat rvec, cv::Mat tvec);
 typedef g2o::BlockSolver_6_3 SlamBlockSolver;
 typedef g2o::LinearSolverCSparse<SlamBlockSolver::PoseMatrixType> SlamLinearSolver;
 
-// 给定index，读取一帧数据
-FRAME readFrame(int index, ParameterReader& pd);
-// 估计一个运动的大小
-double normofTransform(cv::Mat rvec, cv::Mat tvec);
 
 // 检测两个帧，结果定义
 enum CHECK_RESULT{NOT_MATCHED=0, TOO_FAR_AWAY, TOO_CLOSE, KEYFRAME};
@@ -56,6 +53,8 @@ void checkRandomLoops(vector<FRAME>& frames, FRAME& currFrame, g2o::SparseOptimi
 int main(int argc, char** argv)
 {
     ParameterReader pd;
+    ImgReader imgRd;
+    DepthReader depthRd;
     int startIndex = atoi(pd.getData("start_index").c_str());
     int endIndex = atoi(pd.getData("end_index").c_str());
 
@@ -65,8 +64,8 @@ int main(int argc, char** argv)
     //initialize
     cout << "Initializing ..." << endl;
     int currIndex = startIndex; // 当前索引为currIndex
-    FRAME currFrame = readFrame(currIndex, pd); //上一帧数据
-
+    // FRAME currFrame = readFrame(currIndex, pd); //上一帧数据
+    FRAME currFrame = readFrameDepthImg(currIndex, pd, imgRd, depthRd); //上一帧数据
     // 我们总是在比较currFrame和lastFrame
     // 这个getDefaultCamera()在哪里定义的哦？ 在slamBase.h
     CAMERA_INTRINSIC_PARAMETERS camera = getDefaultCamera();
@@ -113,7 +112,7 @@ int main(int argc, char** argv)
     {
         cout << endl;
         cout << "Reading files " << currIndex << endl;
-        FRAME currFrame = readFrame(currIndex, pd); //读取currFrame
+        FRAME currFrame = readFrameDepthImg(currIndex, pd, imgRd, depthRd); //读取currFrame
         compute_KeyPoints_Desp(currFrame);
         // 比较 [currFrame] and [lastFrame]
         CHECK_RESULT result = checkKeyframes( keyframes.back(), currFrame, globalOptimizer);
@@ -203,9 +202,10 @@ int main(int argc, char** argv)
     return 0;
 }
 
-FRAME readFrame(int index, ParameterReader& pd)
+FRAME readFrameDepthImg(int index, ParameterReader& pd, ImgReader& imgRd, DepthReader& depthRd)
 {
     FRAME f;
+
     string rgbDir = pd.getData("rgb_dir");
     string depthDir = pd.getData("depth_dir");
 
@@ -213,18 +213,21 @@ FRAME readFrame(int index, ParameterReader& pd)
     string depthExt = pd.getData("depth_extension");
 
     stringstream ss;
-    ss << rgbDir << index << rgbExt;
     string filename;
+
+    cout << "img_index: " << imgRd.getImg(index) << endl;
+    ss << rgbDir << imgRd.getImg(index) << rgbExt;
     ss >> filename;
     f.rgb = cv::imread(filename);
 
     ss.clear();
     filename.clear();
-    ss << depthDir << index << depthExt;
-    ss >> filename;
 
+    cout << "depth_index: " << depthRd.getDepth(index) << endl;
+    ss << depthDir << depthRd.getDepth(index) << depthExt;
+    ss >> filename;
     f.depth = cv::imread(filename, -1);
-    f.frameID = index;
+
     return f;
 }
 
