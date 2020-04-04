@@ -156,7 +156,7 @@ RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARA
     // cv::imwrite( "../data/good_matches.png", imgMatches );
     // cv::waitKey(0);
 
-    if (goodMatches.size() <= 7) 
+    if (goodMatches.size() <= 10) 
     {
         result_pnp.inliers = -1;
         return result_pnp;
@@ -178,25 +178,25 @@ RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARA
     {
         // query 是第一个, train 是第二个
         // TODO: DEBUG
-        cout << "1";
+        // cout << "1";
         cv::Point2f p = frame1.kp[goodMatches[i].queryIdx].pt;
         // 获取d是要小心！x是向右的，y是向下的，所以y才是行，x是列！
-        cout << "2" << endl;
-        cout << "y: " << int(p.y) << " x: " <<int(p.x) << endl;
+        // cout << "2" << endl;
+        // cout << "y: " << int(p.y) << " x: " <<int(p.x) << endl;
         ushort d = frame1.depth.ptr<ushort>( int(p.y) )[ int(p.x) ];
-        cout << "3";
+        // cout << "3";
         if (d == 0)
         {
-            cout << "4";
+            // cout << "4";
             continue;
         }
         pts_img.push_back( cv::Point2f( frame2.kp[goodMatches[i].trainIdx].pt ) );
-        cout << "5";
+        // cout << "5";
         // 将(u,v,d)转成(x,y,z)
         cv::Point3f pt ( p.x, p.y, d );
-        cout << "6";
+        // cout << "6";
         cv::Point3f pd = point2dTo3d( pt, camera );
-        cout << "7" << endl;
+        // cout << "7" << endl;
         pts_obj.push_back( pd );
     }
     cout << "finishing push of good matches " << endl;

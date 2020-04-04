@@ -54,4 +54,4 @@ nearby_loops=5
 random_loops=5
 
 # confidence
-confidence=0.98
+confidence=0.95
