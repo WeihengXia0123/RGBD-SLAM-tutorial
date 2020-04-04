@@ -28,7 +28,9 @@ make
 - core dump at some frames
 - some wierd DTL algorithm bugs: 
 ```bash
-DLT algorithm needs at least 6 points for pose estimation from 3D-2D point correspondences. (expected: 'count >= 6'), where'count' is 5
+DLT algorithm needs at least 6 points for pose estimation from 3D-2D point correspondences. 
+(expected: 'count >= 6'), 
+where'count' is 5
 ```
 - too many consecutive `not enough inliers`, maybe the distance between the frames are too far.
 ```bash
