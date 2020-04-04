@@ -178,7 +178,10 @@ RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARA
     {
         // query 是第一个, train 是第二个
         // TODO: DEBUG
+<<<<<<< HEAD
         cout << "1";
+=======
+>>>>>>> master
         cv::Point2f p = frame1.kp[goodMatches[i].queryIdx].pt;
         // 获取d是要小心！x是向右的，y是向下的，所以y才是行，x是列！
         cout << "2" << endl;
