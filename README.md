@@ -48,3 +48,4 @@ inliers not enough, abandoning this frame
   
 <div align=center><img src="https://github.com/WeihengXia0123/RGBD-SLAM-tutorial/blob/master/example/2.png" width="600" height="600"/>
 
+(core dump, to be continued...)
