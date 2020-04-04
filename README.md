@@ -17,6 +17,10 @@ make
 - Steo3: run the code in /bin folder:
 `.visualOdometry`
 
+## Code structure
+`/src` has the main source files.
+- `slamBase.cpp` has most self-defined functions to compute 
+
 ## Example of results
 
 <div align=center><img src="https://github.com/WeihengXia0123/RGBD-SLAM-tutorial/blob/master/example/3.png" width="600" height="600"/>
