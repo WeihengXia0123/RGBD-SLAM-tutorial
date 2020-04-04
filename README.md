@@ -18,5 +18,6 @@ make
 `.visualOdometry`
 
 ## Example of results
+<img src="https://github.com/WeihengXia0123/RGBD-SLAM-tutorial/blob/master/example/3.png" width="150" height="200" alt="example1"/>
 ![image](https://github.com/WeihengXia0123/RGBD-SLAM-tutorial/blob/master/example/1.png)
 ![image](https://github.com/WeihengXia0123/RGBD-SLAM-tutorial/blob/master/example/2.png)
