@@ -1,7 +1,8 @@
 # RGBD-SLAM-tutorial
 
 ## Reference： 
-- [Tutorial Blog by Gao Xiang: 一起来做RGBD-SLAM系列](https://www.cnblogs.com/gaoxiang12/p/4652478.html)
+- [[Tutorial Blog]. Gao Xiang: 一起来做RGBD-SLAM系列](https://www.cnblogs.com/gaoxiang12/p/4652478.html)
+- [[SLAMBOOK]. Gao Xiang](https://github.com/gaoxiang12/slambook-en)
 - [TUM dataset](https://vision.in.tum.de/data/datasets/rgbd-dataset)
 
 ## How to run the code:
