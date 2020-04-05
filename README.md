@@ -2,7 +2,7 @@
 
 ## Reference： 
 - [[Tutorial Blog:一起来做RGBD-SLAM系列]. Gao Xiang](https://www.cnblogs.com/gaoxiang12/p/4652478.html)
-- [[slambook-en]. Gao Xiang](https://github.com/gaoxiang12/slambook-en)
+- [[slambook-en]. Gao Xiang](https://github.com/gaoxiang12/slambook-en/blob/master/slambook-en.pdf)
 - [slambook code](https://github.com/gaoxiang12/slambook2)
 - [TUM dataset](https://vision.in.tum.de/data/datasets/rgbd-dataset)
 
