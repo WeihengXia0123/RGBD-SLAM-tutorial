@@ -7,7 +7,7 @@
 - [TUM dataset](https://vision.in.tum.de/data/datasets/rgbd-dataset)
 
 ## How to run the code:
-- Preparation: download openCV 3.4+ and PCL, Eigen3, and other necessary libraries (I might forget some, but can be found in the includes).
+- Preparation: download openCV 3.4+ and PCL, Eigen3, Ceres, g2o, and other necessary libraries
 - Step 1: download the dataset from TUM website above, then put it into `[$repo_folder]/data/rgb_png` and `[$repo_folder]/data/depth_png`, along with the `data/rgb.txt`, and `data/depth.txt` for dataset index. (The code about how to extract images and depths data are written in slamBase.h, you can change the path there)
 - Step 2: build and compile the code
 ```bash
@@ -16,11 +16,12 @@ cd build
 cmake ..
 make
 ```
-- Steo3: run the code in /bin folder:
-`.visualOdometry`
+- Step3: run the code in /bin folder:
+  `./bin/visualOdometry`
 
 ## Code structure
 `/src` has the main source files.
+
 - `slamBase.cpp` has most self-defined functions to compute keyPoints and Descriptors, estimate Motion, join point clouds and so on.
 - `visualOdometry.cpp` implemented the VO.
 - `slamEnd.cpp` integrated the G2O library for optimization.
@@ -45,9 +46,9 @@ inliers not enough, abandoning this frame
 ## Example of results
 
 <div align=center><img src="https://github.com/WeihengXia0123/RGBD-SLAM-tutorial/blob/master/example/3.png" width="600" height="600"/>
-  
+
 <div align=center><img src="https://github.com/WeihengXia0123/RGBD-SLAM-tutorial/blob/master/example/1.png" width="600" height="600"/>
-  
+
 <div align=center><img src="https://github.com/WeihengXia0123/RGBD-SLAM-tutorial/blob/master/example/2.png" width="600" height="600"/>
 
 (core dump, to be continued...)
