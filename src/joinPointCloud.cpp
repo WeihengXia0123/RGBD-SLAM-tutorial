@@ -72,7 +72,7 @@ int main(int argc, char** argv)
     PointCloud::Ptr output(new PointCloud());
     pcl::transformPointCloud(*cloud1, *output, T.matrix());
     *output += *cloud2;
-    pcl::io::savePCDFile("../data/result.pcd", *output);
+    pcl::io::savePCDFile("../data/join_pcl.pcd", *output);
     cout << "Final result saved." << endl;
 
     // pcl::visualization::CloudViewer viewer("cloud viewer");

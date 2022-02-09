@@ -22,9 +22,9 @@ start_index=1
 end_index=750
 
 # 数据所在目录
-rgb_dir=/home/weiheng/Dataset/NYU/data/rgb_png/
+rgb_dir=../data/rgb/
 rgb_extension=.png
-depth_dir=/home/weiheng/Dataset/NYU/data/depth_png/
+depth_dir=../data/depth/
 depth_extension=.png
 
 # 点云分辨率
